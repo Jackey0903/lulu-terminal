@@ -3,11 +3,11 @@
   "logo": {
     "type": "file",
     "source": "~/.config/fastfetch/pudding-lulu-logo.txt",
-    "width": 28,
+    "width": 20,
     "height": 4,
     "padding": {
       "top": 1,
-      "left": 2
+      "left": 1
     }
   },
   "display": {
