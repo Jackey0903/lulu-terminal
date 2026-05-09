@@ -39,7 +39,7 @@
 打开终端，粘贴这一行：
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/jackluo2012/lulu-terminal/main/setup.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Jackey0903/lulu-terminal/main/setup.sh)
 ```
 
 安装过程会：
