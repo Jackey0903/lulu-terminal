@@ -75,9 +75,9 @@ get_current_theme() {
         return
     fi
     if grep -q "$MARKER_START" "$ZSHRC" 2>/dev/null; then
-        if grep -q "ghostty-banana-day" "$GHOSTTY_DIR/config" 2>/dev/null; then
+        if grep -q "lulu-theme: banana-day" "$GHOSTTY_DIR/config" 2>/dev/null; then
             echo "banana-day"
-        elif grep -q "ghostty-choco-night" "$GHOSTTY_DIR/config" 2>/dev/null; then
+        elif grep -q "lulu-theme: choco-night" "$GHOSTTY_DIR/config" 2>/dev/null; then
             echo "choco-night"
         elif [[ -f "$GHOSTTY_DIR/config" ]]; then
             echo "installed (unknown theme)"
