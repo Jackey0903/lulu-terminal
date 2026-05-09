@@ -1,0 +1,98 @@
+# lulu-terminal: Banana Day Starship Prompt
+# 布丁的小窝 · 白天模式
+
+format = """
+[](soft-cream)\
+$os\
+$username\
+[](bg:pink)\
+[](pink) 🍌 布丁的小窝 \
+$directory\
+$git_branch\
+$git_status\
+$python\
+$nodejs\
+$rust\
+$cmd_duration\
+[](soft-cream)\
+$line_break\
+[](pink) $character"""
+
+# ---- 颜色定义 ----
+[palettes.lulu]
+soft-cream = "#FFF4C7"
+choco = "#3A2A22"
+pink = "#F6A6C8"
+orange = "#F59B32"
+banana = "#F7D63A"
+matcha = "#8AAE5A"
+berry = "#E66A7A"
+deep-choco = "#5C4A3E"
+
+# ---- 段落样式 ----
+[os]
+disabled = false
+style = "bg:banana fg:choco"
+
+[os.symbols]
+Macos = "🍎"
+
+[username]
+show_always = false
+style_user = "bg:banana fg:choco"
+style_root = "bg:berry fg:soft-cream"
+format = '[$user ]($style)'
+
+[directory]
+style = "bg:pink fg:choco"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "📄"
+"Downloads" = "⬇️"
+"Music" = "🎵"
+"Pictures" = "🖼️"
+"Projects" = "💻"
+
+[git_branch]
+style = "bg:pink fg:choco"
+format = '[ 🌱 $branch ]($style)'
+symbol = ""
+
+[git_status]
+style = "bg:pink fg:choco"
+format = '[$all_status$ahead_behind ]($style)'
+modified = "✎"
+untracked = "?"
+staged = "+"
+deleted = "✕"
+
+[python]
+style = "bg:pink fg:choco"
+format = '[ 🐍 ${version} ]($style)'
+
+[nodejs]
+style = "bg:pink fg:choco"
+format = '[ 🍮 node v${version} ]($style)'
+
+[rust]
+style = "bg:pink fg:choco"
+format = '[ 🦀 $version ]($style)'
+
+[cmd_duration]
+style = "bg:pink fg:choco"
+format = '[ ⏱ $duration ]($style)'
+min_time = 2_000
+
+[line_break]
+disabled = false
+
+[character]
+success_symbol = '[🐾 开工啦 ❯](bold matcha)'
+error_symbol = '[🐾 出错了 ❯](bold berry)'
+
+[fill]
+symbol = " "
+style = "bg:soft-cream"

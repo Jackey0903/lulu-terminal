@@ -1,0 +1,415 @@
+#!/usr/bin/env bash
+# ============================================================
+# lulu · 噜噜终端 CLI
+# 一个可爱的 macOS 终端治愈系主题工具
+# ============================================================
+
+set -euo pipefail
+
+# ---- 常量 ----
+readonly LULU_VERSION="1.0.0"
+readonly LULU_NAME="lulu-terminal"
+readonly LULU_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+readonly GHOSTTY_DIR="$HOME/.config/ghostty"
+readonly STARSHIP_DIR="$HOME/.config"
+readonly FASTFETCH_DIR="$HOME/.config/fastfetch"
+readonly ZSHRC="$HOME/.zshrc"
+
+readonly MARKER_START="# >>> lulu-terminal >>>"
+readonly MARKER_END="# <<< lulu-terminal <<<"
+
+readonly THEMES_DIR="$LULU_DIR/themes"
+readonly STARSHIP_THEMES_DIR="$LULU_DIR/starship"
+readonly FASTFETCH_DIR_SRC="$LULU_DIR/fastfetch"
+
+readonly VALID_THEMES=("banana-day" "choco-night")
+
+# ---- 颜色 ----
+C_RESET='\033[0m'
+C_ORANGE='\033[38;2;245;155;50m'
+C_PINK='\033[38;2;246;166;200m'
+C_YELLOW='\033[38;2;247;214;58m'
+C_GREEN='\033[38;2;138;174;90m'
+C_RED='\033[38;2;230;106;122m'
+C_BOLD='\033[1m'
+C_DIM='\033[2m'
+
+# ---- 工具函数 ----
+
+info()  { printf "${C_ORANGE}🍊 %s${C_RESET}\n" "$*"; }
+ok()    { printf "${C_GREEN}✅ %s${C_RESET}\n" "$*"; }
+warn()  { printf "${C_YELLOW}⚠️  %s${C_RESET}\n" "$*"; }
+err()   { printf "${C_RED}❌ %s${C_RESET}\n" "$*" >&2; }
+hint()  { printf "${C_DIM}   %s${C_RESET}\n" "$*"; }
+title() { printf "\n${C_BOLD}${C_PINK}🐾 %s${C_RESET}\n\n" "$*"; }
+
+ask_yes_no() {
+    local prompt="$1"
+    local default="${2:-y}"
+    local yn_hint
+    if [[ "$default" == "y" ]]; then
+        yn_hint="[Y/n]"
+    else
+        yn_hint="[y/N]"
+    fi
+    printf "${C_PINK}%s %s ${C_RESET}" "$prompt" "$yn_hint"
+    read -r answer
+    answer="${answer:-$default}"
+    [[ "$answer" =~ ^[Yy]$ ]]
+}
+
+is_valid_theme() {
+    local theme="$1"
+    for t in "${VALID_THEMES[@]}"; do
+        [[ "$t" == "$theme" ]] && return 0
+    done
+    return 1
+}
+
+get_current_theme() {
+    if [[ ! -f "$ZSHRC" ]]; then
+        echo "none"
+        return
+    fi
+    if grep -q "$MARKER_START" "$ZSHRC" 2>/dev/null; then
+        if grep -q "banana-day" "$GHOSTTY_DIR/config" 2>/dev/null; then
+            echo "banana-day"
+        elif grep -q "choco-night" "$GHOSTTY_DIR/config" 2>/dev/null; then
+            echo "choco-night"
+        else
+            echo "installed (unknown theme)"
+        fi
+    else
+        echo "not installed"
+    fi
+}
+
+# ---- 依赖检查 ----
+
+check_macos() {
+    if [[ "$(uname)" != "Darwin" ]]; then
+        err "此工具仅支持 macOS 系统。"
+        exit 1
+    fi
+}
+
+check_homebrew() {
+    if ! command -v brew &>/dev/null; then
+        err "未找到 Homebrew。"
+        hint "请先安装 Homebrew: https://brew.sh"
+        exit 1
+    fi
+}
+
+check_or_install() {
+    local name="$1"
+    local cmd="$2"
+    local brew_formula="$3"
+    local brew_cask="${4:-}"
+
+    if command -v "$cmd" &>/dev/null; then
+        ok "$name 已安装"
+        return 0
+    fi
+
+    warn "$name 未安装"
+    if ask_yes_no "是否用 Homebrew 安装 $name？"; then
+        if [[ -n "$brew_cask" ]]; then
+            info "正在安装 $name (cask)..."
+            brew install --cask "$brew_cask"
+        else
+            info "正在安装 $name..."
+            brew install "$brew_formula"
+        fi
+        if command -v "$cmd" &>/dev/null; then
+            ok "$name 安装成功"
+        else
+            err "$name 安装失败，请手动安装。"
+            return 1
+        fi
+    else
+        warn "跳过 $name 安装。主题可能无法正常工作。"
+        return 1
+    fi
+}
+
+# ---- 目录与文件操作 ----
+
+ensure_dir() {
+    local dir="$1"
+    if [[ ! -d "$dir" ]]; then
+        mkdir -p "$dir"
+        hint "创建目录: $dir"
+    fi
+}
+
+copy_theme_files() {
+    local theme="$1"
+    local ghostty_src="$THEMES_DIR/ghostty-${theme}.conf"
+    local starship_src="$STARSHIP_THEMES_DIR/${theme}.toml"
+
+    # Ghostty
+    ensure_dir "$GHOSTTY_DIR"
+    cp "$ghostty_src" "$GHOSTTY_DIR/config"
+    hint "Ghostty 配置 → $GHOSTTY_DIR/config"
+
+    # Starship（复制到用户 config 目录）
+    cp "$starship_src" "$STARSHIP_DIR/starship.toml"
+    hint "Starship 配置 → $STARSHIP_DIR/starship.toml"
+
+    # Fastfetch
+    ensure_dir "$FASTFETCH_DIR"
+    cp "$FASTFETCH_DIR_SRC/config.jsonc" "$FASTFETCH_DIR/config.jsonc"
+    cp "$FASTFETCH_DIR_SRC/pudding-lulu-logo.txt" "$FASTFETCH_DIR/pudding-lulu-logo.txt"
+    hint "Fastfetch 配置 → $FASTFETCH_DIR/"
+}
+
+# ---- .zshrc 标记块管理 ----
+
+remove_lulu_block() {
+    if [[ ! -f "$ZSHRC" ]]; then
+        return 0
+    fi
+    if grep -q "$MARKER_START" "$ZSHRC"; then
+        # 使用 sed 删除标记块（含标记行本身）
+        sed -i.bak "/$MARKER_START/,/$MARKER_END/d" "$ZSHRC"
+        rm -f "$ZSHRC.bak"
+        hint "已从 .zshrc 移除旧的 lulu-terminal 配置块"
+    fi
+}
+
+write_lulu_block() {
+    remove_lulu_block
+
+    cat >> "$ZSHRC" << 'ZSH_BLOCK'
+
+# >>> lulu-terminal >>>
+eval "$(starship init zsh)"
+if command -v fastfetch >/dev/null 2>&1; then
+  fastfetch
+fi
+# <<< lulu-terminal <<<
+ZSH_BLOCK
+
+    hint "已写入 .zshrc 标记块"
+}
+
+# ---- 命令实现 ----
+
+cmd_install() {
+    title "安装噜噜终端 v$LULU_VERSION"
+
+    check_macos
+    check_homebrew
+
+    info "检查依赖..."
+    check_or_install "Ghostty"   "ghostty"   "ghostty"   "ghostty" || true
+    check_or_install "Starship"  "starship"  "starship"             || true
+    check_or_install "Fastfetch" "fastfetch" "fastfetch"            || true
+
+    # 选择主题
+    local theme="banana-day"
+    echo ""
+    printf "${C_BOLD}选择主题：${C_RESET}\n"
+    printf "  ${C_YELLOW}1)${C_RESET} banana-day   🍌 白天模式（奶油黄，温暖明亮）\n"
+    printf "  ${C_YELLOW}2)${C_RESET} choco-night  🌙 夜间模式（深巧克力，安静沉稳）\n"
+    printf "\n${C_PINK}请输入选项 [1]: ${C_RESET}"
+    read -r choice
+    case "${choice:-1}" in
+        1) theme="banana-day" ;;
+        2) theme="choco-night" ;;
+        *) theme="banana-day" ;;
+    esac
+
+    info "应用主题: $theme"
+    copy_theme_files "$theme"
+
+    # .zshrc
+    if [[ -f "$ZSHRC" ]] && grep -q "$MARKER_START" "$ZSHRC"; then
+        warn "检测到 .zshrc 中已有 lulu-terminal 配置块，将更新。"
+    fi
+    write_lulu_block
+
+    echo ""
+    ok "安装完成！"
+    hint "请重新打开终端窗口以查看效果。"
+    hint "切换主题: ./lulu switch banana-day 或 ./lulu switch choco-night"
+    echo ""
+}
+
+cmd_switch() {
+    local theme="${1:-}"
+
+    if [[ -z "$theme" ]]; then
+        err "请指定主题名称。"
+        hint "用法: lulu switch <banana-day|choco-night>"
+        exit 1
+    fi
+
+    if ! is_valid_theme "$theme"; then
+        err "未知主题: $theme"
+        hint "可用主题: banana-day, choco-night"
+        exit 1
+    fi
+
+    title "切换主题 → $theme"
+
+    copy_theme_files "$theme"
+    write_lulu_block
+
+    echo ""
+    ok "已切换到 $theme 主题！"
+    hint "请重新打开终端窗口以查看效果。"
+    echo ""
+}
+
+cmd_status() {
+    title "噜噜终端状态"
+
+    local current_theme
+    current_theme="$(get_current_theme)"
+
+    printf "  ${C_BOLD}版本:${C_RESET}     %s\n" "$LULU_VERSION"
+    printf "  ${C_BOLD}项目目录:${C_RESET} %s\n" "$LULU_DIR"
+    printf "  ${C_BOLD}当前主题:${C_RESET} %s\n" "$current_theme"
+    echo ""
+
+    # 依赖状态
+    printf "  ${C_BOLD}依赖状态:${C_RESET}\n"
+    if command -v ghostty &>/dev/null; then
+        printf "  ${C_GREEN}✓${C_RESET} Ghostty\n"
+    else
+        printf "  ${C_RED}✗${C_RESET} Ghostty (未安装)\n"
+    fi
+    if command -v starship &>/dev/null; then
+        printf "  ${C_GREEN}✓${C_RESET} Starship\n"
+    else
+        printf "  ${C_RED}✗${C_RESET} Starship (未安装)\n"
+    fi
+    if command -v fastfetch &>/dev/null; then
+        printf "  ${C_GREEN}✓${C_RESET} Fastfetch\n"
+    else
+        printf "  ${C_RED}✗${C_RESET} Fastfetch (未安装)\n"
+    fi
+    echo ""
+
+    # 配置文件状态
+    printf "  ${C_BOLD}配置文件:${C_RESET}\n"
+    local files=(
+        "$GHOSTTY_DIR/config"
+        "$STARSHIP_DIR/starship.toml"
+        "$FASTFETCH_DIR/config.jsonc"
+        "$FASTFETCH_DIR/pudding-lulu-logo.txt"
+    )
+    for f in "${files[@]}"; do
+        if [[ -f "$f" ]]; then
+            printf "  ${C_GREEN}✓${C_RESET} %s\n" "$f"
+        else
+            printf "  ${C_DIM}·${C_RESET} %s (不存在)\n" "$f"
+        fi
+    done
+    echo ""
+}
+
+cmd_uninstall() {
+    title "卸载噜噜终端"
+
+    warn "以下操作将移除 lulu-terminal 的配置："
+
+    # 1. 清理 .zshrc
+    if [[ -f "$ZSHRC" ]] && grep -q "$MARKER_START" "$ZSHRC"; then
+        info "将从 .zshrc 中移除 lulu-terminal 标记块。"
+        remove_lulu_block
+        ok "已清理 .zshrc"
+    else
+        hint ".zshrc 中未找到 lulu-terminal 配置块，跳过。"
+    fi
+
+    # 2. 配置文件
+    local ghostty_config="$GHOSTTY_DIR/config"
+    local starship_config="$STARSHIP_DIR/starship.toml"
+
+    echo ""
+    if [[ -f "$ghostty_config" ]]; then
+        if ask_yes_no "删除 Ghostty 配置文件？ ($ghostty_config)"; then
+            rm -f "$ghostty_config"
+            ok "已删除 $ghostty_config"
+        else
+            hint "保留 Ghostty 配置文件。"
+        fi
+    fi
+
+    if [[ -f "$starship_config" ]]; then
+        if ask_yes_no "删除 Starship 配置文件？ ($starship_config)"; then
+            rm -f "$starship_config"
+            ok "已删除 $starship_config"
+        else
+            hint "保留 Starship 配置文件。"
+        fi
+    fi
+
+    local fastfetch_config="$FASTFETCH_DIR/config.jsonc"
+    local fastfetch_logo="$FASTFETCH_DIR/pudding-lulu-logo.txt"
+    if [[ -f "$fastfetch_config" ]] || [[ -f "$fastfetch_logo" ]]; then
+        if ask_yes_no "删除 Fastfetch 配置文件？ ($FASTFETCH_DIR/)"; then
+            rm -f "$fastfetch_config" "$fastfetch_logo"
+            ok "已删除 Fastfetch 配置"
+        else
+            hint "保留 Fastfetch 配置文件。"
+        fi
+    fi
+
+    echo ""
+    ok "卸载完成。"
+    hint "噜噜和布丁会想念你的 🍊🐾"
+    hint "重新安装: ./lulu install"
+    echo ""
+}
+
+cmd_help() {
+    printf "${C_BOLD}${C_ORANGE}🍊 噜噜终端 · lulu-terminal${C_RESET} v%s\n\n" "$LULU_VERSION"
+
+    printf "${C_BOLD}用法:${C_RESET}\n"
+    printf "  ./lulu <命令> [参数]\n\n"
+
+    printf "${C_BOLD}命令:${C_RESET}\n"
+    printf "  ${C_YELLOW}install${C_RESET}              安装噜噜终端（检查依赖 + 选择主题）\n"
+    printf "  ${C_YELLOW}switch${C_RESET} <主题名>       切换主题（banana-day / choco-night）\n"
+    printf "  ${C_YELLOW}status${C_RESET}               查看当前状态和配置\n"
+    printf "  ${C_YELLOW}uninstall${C_RESET}            卸载噜噜终端\n"
+    printf "  ${C_YELLOW}help${C_RESET}                 显示帮助信息\n\n"
+
+    printf "${C_BOLD}主题:${C_RESET}\n"
+    printf "  ${C_PINK}banana-day${C_RESET}    🍌 白天模式 · 奶油黄背景 · 温暖明亮\n"
+    printf "  ${C_PINK}choco-night${C_RESET}   🌙 夜间模式 · 深巧克力背景 · 安静沉稳\n\n"
+
+    printf "${C_BOLD}示例:${C_RESET}\n"
+    printf "  ./lulu install\n"
+    printf "  ./lulu switch banana-day\n"
+    printf "  ./lulu switch choco-night\n\n"
+
+    printf "${C_DIM}噜噜和布丁陪你写代码 🍊🐾${C_RESET}\n\n"
+}
+
+# ---- 主入口 ----
+
+main() {
+    local cmd="${1:-help}"
+    shift 2>/dev/null || true
+
+    case "$cmd" in
+        install)    cmd_install ;;
+        switch)     cmd_switch "$@" ;;
+        status)     cmd_status ;;
+        uninstall)  cmd_uninstall ;;
+        help|--help|-h)  cmd_help ;;
+        *)
+            err "未知命令: $cmd"
+            hint "运行 './lulu help' 查看帮助。"
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
