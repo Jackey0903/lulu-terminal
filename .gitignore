@@ -1,1 +1,4 @@
 image.png
+.DS_Store
+*.bak
+.claude/
