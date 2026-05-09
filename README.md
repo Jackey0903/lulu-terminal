@@ -32,62 +32,44 @@
 ### 前置条件
 
 - macOS（支持 zsh）
-- [Homebrew](https://brew.sh/)
+- [Homebrew](https://brew.sh/)（如果没有会自动提示安装）
 
-### 一键安装
+### 一行命令安装
+
+打开终端，粘贴这一行：
 
 ```bash
-git clone https://github.com/yourname/lulu-terminal.git
-cd lulu-terminal
-chmod +x lulu
-./lulu install
+bash <(curl -sL https://raw.githubusercontent.com/jackluo2012/lulu-terminal/main/setup.sh)
 ```
 
-安装过程会自动检查以下依赖，缺失时询问是否用 Homebrew 安装：
+安装过程会：
+1. 检查并安装依赖（Ghostty、Starship、Fastfetch）
+2. 选择默认主题（白天/夜间）
+3. 自动配置 `~/.zshrc`
+4. 安装 `lulu` 全局命令
 
-- **Ghostty** — 终端模拟器
-- **Starship** — 命令行提示符
-- **Fastfetch** — 系统信息展示
-
-安装完成后，重新打开终端即可看到效果。
+安装完成后，**重新打开终端**即可看到效果。
 
 ---
 
-## 🔄 切换主题
+## 🎮 日常使用
+
+安装完成后，`lulu` 命令在任意目录可用：
 
 ```bash
-# 白天模式：香蕉奶油色，温暖明亮
-./lulu switch banana-day
+# 切换主题
+lulu switch banana-day    # 🍌 白天模式：奶油黄，温暖明亮
+lulu switch choco-night   # 🌙 夜间模式：深巧克力，安静沉稳
 
-# 夜间模式：深巧克力色，安静沉稳
-./lulu switch choco-night
+# 查看状态
+lulu status
+
+# 更新到最新版
+lulu update
+
+# 卸载
+lulu uninstall
 ```
-
-切换后重新打开终端窗口生效。
-
----
-
-## 📋 查看状态
-
-```bash
-./lulu status
-```
-
-显示当前使用的主题、配置文件路径、依赖安装情况。
-
----
-
-## 🗑️ 卸载
-
-```bash
-./lulu uninstall
-```
-
-卸载过程：
-
-1. 删除 `~/.zshrc` 中的 `lulu-terminal` 标记块（不会影响其他配置）
-2. 询问是否删除 `~/.config/ghostty` 中的主题配置文件
-3. 询问是否删除 `~/.config/fastfetch` 中的配置文件
 
 ---
 
@@ -97,7 +79,7 @@ chmod +x lulu
 
 ### Ghostty 终端颜色
 
-编辑 `themes/ghostty-banana-day.conf` 或 `themes/ghostty-choco-night.conf`：
+编辑 `~/.config/ghostty/config`（由 `lulu switch` 自动复制）：
 
 | 色值 | 名称 | 用途 |
 |------|------|------|
@@ -112,7 +94,7 @@ chmod +x lulu
 
 ### Starship 提示符
 
-编辑 `starship/banana-day.toml` 或 `starship/choco-night.toml`，修改 `[palettes.lulu]` 中的颜色值。
+编辑 `~/.config/starship.toml`，修改 `[palettes.lulu]` 中的颜色值。
 
 ### 推荐字体
 
@@ -129,7 +111,8 @@ brew install --cask font-maple-mono-nf-cn
 ```
 lulu-terminal/
 ├── README.md                       # 本文件
-├── lulu                            # CLI 安装/切换脚本
+├── setup.sh                        # 一键安装脚本（curl 用）
+├── lulu                            # CLI 主程序
 ├── themes/
 │   ├── ghostty-banana-day.conf     # Ghostty 白天主题
 │   └── ghostty-choco-night.conf    # Ghostty 夜间主题
