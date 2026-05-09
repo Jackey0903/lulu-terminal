@@ -174,10 +174,10 @@ write_lulu_block() {
     local theme="${1:-banana-day}"
     remove_lulu_block
 
-    # 根据主题选择颜色
-    local bg_r=255 bg_g=244 bg_b=199 fg_r=58 fg_g=42 fg_b=34
+    # 根据主题选择颜色 (Apple Terminal)
+    local bg_r=240 bg_g=240 bg_b=240 fg_r=45 fg_g=45 fg_b=45
     if [[ "$theme" == "choco-night" ]]; then
-        bg_r=30 bg_g=20 bg_b=16 fg_r=255 fg_g=244 fg_b=199
+        bg_r=30 bg_g=20 bg_b=16 fg_r=240 fg_g=240 fg_b=240
     fi
 
     cat >> "$ZSHRC" << ZSH_BLOCK

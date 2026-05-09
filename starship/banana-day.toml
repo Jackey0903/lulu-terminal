@@ -1,5 +1,5 @@
 # lulu-terminal: Banana Day Starship Prompt
-# 布丁的小窝 · 白天模式 · 简约可爱
+# 布丁的小窝 · 白天模式 · 浅灰简约
 
 format = """
 $username\
@@ -16,18 +16,18 @@ $character"""
 
 [os]
 disabled = false
-style = "bold yellow"
+style = "bold #2D2D2D"
 
 [os.symbols]
 Macos = " "
 
 [username]
 show_always = false
-style_user = "bold pink"
+style_user = "bold #E66A7A"
 format = '[$user@]($style)'
 
 [directory]
-style = "bold pink"
+style = "bold #2D2D2D"
 format = '[ $path ]($style)'
 truncation_length = 3
 truncation_symbol = "…/"
@@ -40,12 +40,12 @@ truncation_symbol = "…/"
 "Projects" = " "
 
 [git_branch]
-style = "bold green"
+style = "bold #8AAE5A"
 format = '[ $symbol $branch ]($style)'
 symbol = ""
 
 [git_status]
-style = "bold red"
+style = "bold #E66A7A"
 format = '[$all_status$ahead_behind ]($style)'
 modified = "✎"
 untracked = "?"
@@ -53,17 +53,17 @@ staged = "+"
 deleted = "✕"
 
 [python]
-style = "bold yellow"
+style = "bold #F59B32"
 format = '[ $symbol ${version} ]($style)'
 symbol = "🐍"
 
 [nodejs]
-style = "bold yellow"
+style = "bold #F59B32"
 format = '[ $symbol v${version} ]($style)'
 symbol = "🍮"
 
 [rust]
-style = "bold yellow"
+style = "bold #F59B32"
 format = '[ $symbol $version ]($style)'
 symbol = "🦀"
 
@@ -76,5 +76,5 @@ min_time = 3_000
 disabled = false
 
 [character]
-success_symbol = '[🐾 开工啦 ❯](bold green)'
-error_symbol = '[🐾 出错了 ❯](bold red)'
+success_symbol = '[🐾 开工啦 ❯](bold #2D2D2D)'
+error_symbol = '[🐾 出错了 ❯](bold #E66A7A)'
