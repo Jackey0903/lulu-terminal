@@ -171,12 +171,25 @@ remove_lulu_block() {
 }
 
 write_lulu_block() {
+    local theme="${1:-banana-day}"
     remove_lulu_block
-    cat >> "$ZSHRC" << 'ZSH_BLOCK'
+
+    # 根据主题选择颜色
+    local bg_r=255 bg_g=244 bg_b=199 fg_r=58 fg_g=42 fg_b=34
+    if [[ "$theme" == "choco-night" ]]; then
+        bg_r=30 bg_g=20 bg_b=16 fg_r=255 fg_g=244 fg_b=199
+    fi
+
+    cat >> "$ZSHRC" << ZSH_BLOCK
 
 # >>> lulu-terminal >>>
-export PATH="$HOME/.local/bin:$PATH"
-eval "$(starship init zsh)"
+export PATH="\$HOME/.local/bin:\$PATH"
+# 设置 Apple Terminal 背景色
+if [[ "\$TERM_PROGRAM" == "Apple_Terminal" ]]; then
+  printf "\033]11;rgb:${bg_r}/${bg_g}/${bg_b}\007"
+  printf "\033]10;rgb:${fg_r}/${fg_g}/${fg_b}\007"
+fi
+eval "\$(starship init zsh)"
 if command -v fastfetch >/dev/null 2>&1; then
   fastfetch
 fi
@@ -213,7 +226,7 @@ cmd_install() {
 
     info "应用主题: $theme"
     copy_theme_files "$theme"
-    write_lulu_block
+    write_lulu_block "$theme"
 
     echo ""
     ok "安装完成！"
@@ -245,7 +258,7 @@ cmd_switch() {
 
     title "切换主题 → $theme"
     copy_theme_files "$theme"
-    write_lulu_block
+    write_lulu_block "$theme"
 
     echo ""
     ok "已切换到 $theme 主题！"
