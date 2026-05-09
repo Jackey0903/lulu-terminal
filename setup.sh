@@ -171,14 +171,18 @@ WRAPPER
 apply_default_theme() {
     echo ""
     printf "${B}选择默认主题：${R}\n"
-    printf "  ${Y}1)${R} banana-day   🍌 白天模式（奶油黄，温暖明亮）\n"
-    printf "  ${Y}2)${R} choco-night  🌙 夜间模式（深巧克力，安静沉稳）\n"
+    printf "  ${Y}1)${R} banana-day    🍌 浅灰白天（简约干净）\n"
+    printf "  ${Y}2)${R} vanilla-light ☁️  暖白白天（温柔奶白）\n"
+    printf "  ${Y}3)${R} choco-night   🌙 巧克力夜间（经典深棕）\n"
+    printf "  ${Y}4)${R} matcha-night  🍵 抹茶夜间（治愈深绿）\n"
     printf "\n${P}请输入选项 [1]: ${R}"
     read -r choice
     local theme
     case "${choice:-1}" in
         1) theme="banana-day" ;;
-        2) theme="choco-night" ;;
+        2) theme="vanilla-light" ;;
+        3) theme="choco-night" ;;
+        4) theme="matcha-night" ;;
         *) theme="banana-day" ;;
     esac
 

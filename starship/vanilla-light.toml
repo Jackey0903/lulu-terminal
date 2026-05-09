@@ -1,0 +1,76 @@
+# lulu-terminal: Vanilla Light Starship Prompt
+# 布丁的小窝 · 暖白模式
+
+format = """
+$username\
+$os\
+$directory\
+$git_branch\
+$git_status\
+$python\
+$nodejs\
+$rust\
+$cmd_duration\
+$line_break\
+$character"""
+
+[os]
+disabled = false
+style = "bold #3D3428"
+[os.symbols]
+Macos = " "
+
+[username]
+show_always = false
+style_user = "bold #E66A7A"
+format = '[$user@]($style)'
+
+[directory]
+style = "bold #3D3428"
+format = '[ $path ]($style)'
+truncation_length = 3
+truncation_symbol = "…/"
+[directory.substitutions]
+"Documents" = " "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+"Projects" = " "
+
+[git_branch]
+style = "bold #8AAE5A"
+format = '[ $symbol $branch ]($style)'
+symbol = ""
+
+[git_status]
+style = "bold #E66A7A"
+format = '[$all_status$ahead_behind ]($style)'
+modified = "✎"
+untracked = "?"
+staged = "+"
+deleted = "✕"
+
+[python]
+style = "bold #F59B32"
+format = '[ $symbol ${version} ]($style)'
+symbol = "🐍"
+[nodejs]
+style = "bold #F59B32"
+format = '[ $symbol v${version} ]($style)'
+symbol = "🍮"
+[rust]
+style = "bold #F59B32"
+format = '[ $symbol $version ]($style)'
+symbol = "🦀"
+
+[cmd_duration]
+style = "dim"
+format = '[ $duration ]($style)'
+min_time = 3_000
+
+[line_break]
+disabled = false
+
+[character]
+success_symbol = '[🐾 开工啦 ❯](bold #3D3428)'
+error_symbol = '[🐾 出错了 ❯](bold #E66A7A)'
