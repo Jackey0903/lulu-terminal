@@ -1,12 +1,9 @@
 # lulu-terminal: Choco Night Starship Prompt
-# 布丁的小窝 · 夜间模式
+# 布丁的小窝 · 夜间模式 · 简约可爱
 
 format = """
-[](bg:deep-choco)\
-$os\
 $username\
-[](bg:choco-bar)\
-[](orange) 🌙 布丁趴好了 \
+$os\
 $directory\
 $git_branch\
 $git_status\
@@ -14,57 +11,41 @@ $python\
 $nodejs\
 $rust\
 $cmd_duration\
-[](bg:deep-choco)\
 $line_break\
-[](orange) $character"""
+$character"""
 
-# ---- 颜色定义 ----
-[palettes.lulu]
-night-bg = "#1E1410"
-deep-choco = "#2E201A"
-choco-bar = "#3A2A22"
-cream = "#FFF4C7"
-pink = "#F6A6C8"
-orange = "#F59B32"
-banana = "#F7D63A"
-matcha = "#8AAE5A"
-berry = "#E66A7A"
-soft-cream = "#FFF4C7"
-
-# ---- 段落样式 ----
 [os]
 disabled = false
-style = "bg:choco-bar fg:cream"
+style = "bold yellow"
 
 [os.symbols]
-Macos = "🍎"
+Macos = " "
 
 [username]
 show_always = false
-style_user = "bg:choco-bar fg:cream"
-style_root = "bg:berry fg:cream"
-format = '[$user ]($style)'
+style_user = "bold pink"
+format = '[$user@]($style)'
 
 [directory]
-style = "bg:choco-bar fg:cream"
-format = "[ $path ]($style)"
+style = "bold yellow"
+format = '[ $path ]($style)'
 truncation_length = 3
 truncation_symbol = "…/"
 
 [directory.substitutions]
-"Documents" = "📄"
-"Downloads" = "⬇️"
-"Music" = "🎵"
-"Pictures" = "🖼️"
-"Projects" = "💻"
+"Documents" = " "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+"Projects" = " "
 
 [git_branch]
-style = "bg:choco-bar fg:cream"
-format = '[ 🌱 $branch ]($style)'
+style = "bold green"
+format = '[ $symbol $branch ]($style)'
 symbol = ""
 
 [git_status]
-style = "bg:choco-bar fg:cream"
+style = "bold red"
 format = '[$all_status$ahead_behind ]($style)'
 modified = "✎"
 untracked = "?"
@@ -72,29 +53,28 @@ staged = "+"
 deleted = "✕"
 
 [python]
-style = "bg:choco-bar fg:cream"
-format = '[ 🐍 ${version} ]($style)'
+style = "bold yellow"
+format = '[ $symbol ${version} ]($style)'
+symbol = "🐍"
 
 [nodejs]
-style = "bg:choco-bar fg:cream"
-format = '[ 🍮 node v${version} ]($style)'
+style = "bold yellow"
+format = '[ $symbol v${version} ]($style)'
+symbol = "🍮"
 
 [rust]
-style = "bg:choco-bar fg:cream"
-format = '[ 🦀 $version ]($style)'
+style = "bold yellow"
+format = '[ $symbol $version ]($style)'
+symbol = "🦀"
 
 [cmd_duration]
-style = "bg:choco-bar fg:cream"
-format = '[ ⏱ $duration ]($style)'
-min_time = 2_000
+style = "dim"
+format = '[ $duration ]($style)'
+min_time = 3_000
 
 [line_break]
 disabled = false
 
 [character]
-success_symbol = '[🍊 噜噜守夜 ❯](bold orange)'
-error_symbol = '[🍊 出事了 ❯](bold berry)'
-
-[fill]
-symbol = " "
-style = "bg:night-bg"
+success_symbol = '[🍊 噜噜守夜 ❯](bold yellow)'
+error_symbol = '[🍊 出事了 ❯](bold red)'

@@ -1,12 +1,9 @@
 # lulu-terminal: Banana Day Starship Prompt
-# 布丁的小窝 · 白天模式
+# 布丁的小窝 · 白天模式 · 简约可爱
 
 format = """
-[](soft-cream)\
-$os\
 $username\
-[](bg:pink)\
-[](pink) 🍌 布丁的小窝 \
+$os\
 $directory\
 $git_branch\
 $git_status\
@@ -14,55 +11,41 @@ $python\
 $nodejs\
 $rust\
 $cmd_duration\
-[](soft-cream)\
 $line_break\
-[](pink) $character"""
+$character"""
 
-# ---- 颜色定义 ----
-[palettes.lulu]
-soft-cream = "#FFF4C7"
-choco = "#3A2A22"
-pink = "#F6A6C8"
-orange = "#F59B32"
-banana = "#F7D63A"
-matcha = "#8AAE5A"
-berry = "#E66A7A"
-deep-choco = "#5C4A3E"
-
-# ---- 段落样式 ----
 [os]
 disabled = false
-style = "bg:banana fg:choco"
+style = "bold yellow"
 
 [os.symbols]
-Macos = "🍎"
+Macos = " "
 
 [username]
 show_always = false
-style_user = "bg:banana fg:choco"
-style_root = "bg:berry fg:soft-cream"
-format = '[$user ]($style)'
+style_user = "bold pink"
+format = '[$user@]($style)'
 
 [directory]
-style = "bg:pink fg:choco"
-format = "[ $path ]($style)"
+style = "bold pink"
+format = '[ $path ]($style)'
 truncation_length = 3
 truncation_symbol = "…/"
 
 [directory.substitutions]
-"Documents" = "📄"
-"Downloads" = "⬇️"
-"Music" = "🎵"
-"Pictures" = "🖼️"
-"Projects" = "💻"
+"Documents" = " "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+"Projects" = " "
 
 [git_branch]
-style = "bg:pink fg:choco"
-format = '[ 🌱 $branch ]($style)'
+style = "bold green"
+format = '[ $symbol $branch ]($style)'
 symbol = ""
 
 [git_status]
-style = "bg:pink fg:choco"
+style = "bold red"
 format = '[$all_status$ahead_behind ]($style)'
 modified = "✎"
 untracked = "?"
@@ -70,29 +53,28 @@ staged = "+"
 deleted = "✕"
 
 [python]
-style = "bg:pink fg:choco"
-format = '[ 🐍 ${version} ]($style)'
+style = "bold yellow"
+format = '[ $symbol ${version} ]($style)'
+symbol = "🐍"
 
 [nodejs]
-style = "bg:pink fg:choco"
-format = '[ 🍮 node v${version} ]($style)'
+style = "bold yellow"
+format = '[ $symbol v${version} ]($style)'
+symbol = "🍮"
 
 [rust]
-style = "bg:pink fg:choco"
-format = '[ 🦀 $version ]($style)'
+style = "bold yellow"
+format = '[ $symbol $version ]($style)'
+symbol = "🦀"
 
 [cmd_duration]
-style = "bg:pink fg:choco"
-format = '[ ⏱ $duration ]($style)'
-min_time = 2_000
+style = "dim"
+format = '[ $duration ]($style)'
+min_time = 3_000
 
 [line_break]
 disabled = false
 
 [character]
-success_symbol = '[🐾 开工啦 ❯](bold matcha)'
-error_symbol = '[🐾 出错了 ❯](bold berry)'
-
-[fill]
-symbol = " "
-style = "bg:soft-cream"
+success_symbol = '[🐾 开工啦 ❯](bold green)'
+error_symbol = '[🐾 出错了 ❯](bold red)'
