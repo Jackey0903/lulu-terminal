@@ -58,5 +58,5 @@ min_time = 2_000
 disabled = false
 
 [character]
-success_symbol = '[  布丁的小窝 ❯](bold green)'
-error_symbol = '[  布丁的小窝 ❯](bold red)'
+success_symbol = '[ 🐾 ❯](bold green)'
+error_symbol = '[ 🐾 ❯](bold red)'
