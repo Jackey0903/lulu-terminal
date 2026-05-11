@@ -27,7 +27,7 @@ readonly MARKER_END="# <<< lulu-terminal <<<"
 readonly THEMES_DIR="$LULU_DIR/themes"
 readonly STARSHIP_THEMES_DIR="$LULU_DIR/starship"
 readonly FASTFETCH_DIR_SRC="$LULU_DIR/fastfetch"
-readonly VALID_THEMES=("banana-day" "vanilla-light" "choco-night" "matcha-night")
+readonly VALID_THEMES=("banana-day" "choco-night")
 
 # ---- 全局选项 ----
 SILENT=false
@@ -174,22 +174,19 @@ write_lulu_block() {
     local theme="${1:-banana-day}"
     remove_lulu_block
 
-    # 根据主题选择颜色 (Apple Terminal)
-    local bg_r=240 bg_g=240 bg_b=240 fg_r=45 fg_g=45 fg_b=45
+    local bg_color=""
     case "$theme" in
-        vanilla-light)  bg_r=250 bg_g=248 bg_b=245; fg_r=61; fg_g=52; fg_b=40 ;;
-        choco-night)    bg_r=30  bg_g=20  bg_b=16;  fg_r=240; fg_g=240; fg_b=240 ;;
-        matcha-night)   bg_r=26  bg_g=36  bg_b=24;  fg_r=232; fg_g=224; fg_b=212 ;;
+        banana-day)  bg_color="FFF4C7" ;;
+        choco-night) bg_color="1E1410" ;;
     esac
 
     cat >> "$ZSHRC" << ZSH_BLOCK
 
 # >>> lulu-terminal >>>
 export PATH="\$HOME/.local/bin:\$PATH"
-# 设置 Apple Terminal 背景色
-if [[ "\$TERM_PROGRAM" == "Apple_Terminal" ]]; then
-  printf "\033]11;rgb:${bg_r}/${bg_g}/${bg_b}\007"
-  printf "\033]10;rgb:${fg_r}/${fg_g}/${fg_b}\007"
+# Apple Terminal 背景色
+if [[ -n "\$TERM_PROGRAM" && "\$TERM_PROGRAM" == "Apple_Terminal" ]]; then
+  printf '\033]11;rgb:${bg_color:0:2}/${bg_color:2:2}/${bg_color:4:2}\007'
 fi
 eval "\$(starship init zsh)"
 if command -v fastfetch >/dev/null 2>&1; then
@@ -216,23 +213,19 @@ cmd_install() {
     local theme="banana-day"
     echo ""
     printf "${C_BOLD}选择主题：${C_RESET}\n"
-    printf "  ${C_YELLOW}1)${C_RESET} banana-day    🍌 浅灰白天（简约干净）\n"
-    printf "  ${C_YELLOW}2)${C_RESET} vanilla-light ☁️  暖白白天（温柔奶白）\n"
-    printf "  ${C_YELLOW}3)${C_RESET} choco-night   🌙 巧克力夜间（经典深棕）\n"
-    printf "  ${C_YELLOW}4)${C_RESET} matcha-night  🍵 抹茶夜间（治愈深绿）\n"
+    printf "  ${C_YELLOW}1)${C_RESET} banana-day   🍌 白天模式（奶油黄，温暖明亮）\n"
+    printf "  ${C_YELLOW}2)${C_RESET} choco-night  🌙 夜间模式（深巧克力，安静沉稳）\n"
     printf "\n${C_PINK}请输入选项 [1]: ${C_RESET}"
     read -r choice
     case "${choice:-1}" in
         1) theme="banana-day" ;;
-        2) theme="vanilla-light" ;;
-        3) theme="choco-night" ;;
-        4) theme="matcha-night" ;;
+        2) theme="choco-night" ;;
         *) theme="banana-day" ;;
     esac
 
     info "应用主题: $theme"
     copy_theme_files "$theme"
-    write_lulu_block "$theme"
+    write_lulu_block
 
     echo ""
     ok "安装完成！"
@@ -264,7 +257,7 @@ cmd_switch() {
 
     title "切换主题 → $theme"
     copy_theme_files "$theme"
-    write_lulu_block "$theme"
+    write_lulu_block
 
     echo ""
     ok "已切换到 $theme 主题！"
@@ -411,44 +404,22 @@ cmd_help() {
     printf "  lulu <命令> [参数]\n\n"
 
     printf "${C_BOLD}命令:${C_RESET}\n"
-    printf "  ${C_YELLOW}switch${C_RESET} <主题名>       切换主题\n"
-    printf "  ${C_YELLOW}themes${C_RESET}               列出所有可用主题\n"
+    printf "  ${C_YELLOW}switch${C_RESET} <主题名>       切换主题（banana-day / choco-night）\n"
     printf "  ${C_YELLOW}status${C_RESET}               查看当前状态和配置\n"
     printf "  ${C_YELLOW}update${C_RESET}                更新到最新版本\n"
     printf "  ${C_YELLOW}uninstall${C_RESET}            卸载噜噜终端\n"
     printf "  ${C_YELLOW}help${C_RESET}                 显示帮助信息\n\n"
 
     printf "${C_BOLD}主题:${C_RESET}\n"
-    printf "  ${C_PINK}banana-day${C_RESET}     🍌 浅灰白天 · 简约干净\n"
-    printf "  ${C_PINK}vanilla-light${C_RESET}  ☁️  暖白白天 · 温柔奶白\n"
-    printf "  ${C_PINK}choco-night${C_RESET}    🌙 巧克力夜间 · 经典深棕\n"
-    printf "  ${C_PINK}matcha-night${C_RESET}   🍵 抹茶夜间 · 治愈深绿\n\n"
+    printf "  ${C_PINK}banana-day${C_RESET}    🍌 白天模式 · 奶油黄背景 · 温暖明亮\n"
+    printf "  ${C_PINK}choco-night${C_RESET}   🌙 夜间模式 · 深巧克力背景 · 安静沉稳\n\n"
 
     printf "${C_BOLD}示例:${C_RESET}\n"
     printf "  lulu switch banana-day\n"
-    printf "  lulu switch matcha-night\n"
+    printf "  lulu switch choco-night\n"
     printf "  lulu status\n\n"
 
     printf "${C_DIM}噜噜和布丁陪你写代码 🍊🐾${C_RESET}\n\n"
-}
-
-cmd_themes() {
-    title "可用主题"
-    local current_theme
-    current_theme="$(get_current_theme)"
-    local themes=("banana-day:🍌 浅灰白天:简约干净" "vanilla-light:☁️  暖白白天:温柔奶白" "choco-night:🌙 巧克力夜间:经典深棕" "matcha-night:🍵 抹茶夜间:治愈深绿")
-    for t in "${themes[@]}"; do
-        IFS=':' read -r name icon desc <<< "$t"
-        if [[ "$current_theme" == "$name" ]]; then
-            printf "  ${C_GREEN}●${C_RESET} ${C_BOLD}%-16s${C_RESET} %s · %s\n" "$name" "$icon" "$desc"
-        else
-            printf "  ${C_DIM}○${C_RESET} %-16s %s · %s\n" "$name" "$icon" "$desc"
-        fi
-    done
-    echo ""
-    hint "当前主题: $current_theme"
-    hint "切换: lulu switch <主题名>"
-    echo ""
 }
 
 # ---- 主入口 ----
@@ -465,7 +436,6 @@ main() {
     case "$cmd" in
         install)    cmd_install ;;
         switch)     cmd_switch "${args[@]+"${args[@]}"}" ;;
-        themes)     cmd_themes ;;
         status)     cmd_status ;;
         update)     cmd_update ;;
         uninstall)  cmd_uninstall ;;

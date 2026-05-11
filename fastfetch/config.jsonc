@@ -3,61 +3,59 @@
   "logo": {
     "type": "file",
     "source": "~/.config/fastfetch/pudding-lulu-logo.txt",
-    "width": 16,
-    "height": 3,
+    "width": 20,
+    "height": 4,
     "padding": {
-      "top": 1,
+      "top": 0,
       "left": 1
     }
   },
   "display": {
-    "separator": "  🍮 ",
+    "separator": " : ",
     "color": {
       "keys": "yellow",
       "title": "magenta"
     }
   },
   "modules": [
-    "title",
-    "separator",
     {
       "type": "os",
-      "key": "🍎 系统",
+      "key": "  OS",
+      "keyColor": "yellow"
+    },
+    {
+      "type": "host",
+      "key": "  Host",
       "keyColor": "yellow"
     },
     {
       "type": "kernel",
-      "key": "🧩 内核",
-      "keyColor": "yellow"
-    },
-    {
-      "type": "shell",
-      "key": "🐚 Shell",
+      "key": "  Kernel",
       "keyColor": "yellow"
     },
     {
       "type": "terminal",
-      "key": "🖥️ 终端",
+      "key": "  Terminal",
       "keyColor": "yellow"
     },
     {
       "type": "cpu",
-      "key": "🧠 CPU",
+      "key": "  CPU",
       "keyColor": "yellow"
     },
     {
       "type": "gpu",
-      "key": "🎮 GPU",
+      "key": "  GPU",
       "keyColor": "yellow"
     },
     {
       "type": "memory",
-      "key": "🧶 内存",
+      "key": "  Memory",
       "keyColor": "yellow"
     },
     {
       "type": "disk",
-      "key": "💾 磁盘",
+      "key": "  Disk",
       "keyColor": "yellow"
     },
     "break",

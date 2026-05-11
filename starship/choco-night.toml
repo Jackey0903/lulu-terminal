@@ -1,17 +1,8 @@
-# lulu-terminal: Choco Night Starship Prompt
-# 布丁的小窝 · 夜间模式 · 简约可爱
+# lulu-terminal: Choco Night Starship
+# 🌙 夜间模式
 
 format = """
-$username\
-$os\
-$directory\
-$git_branch\
-$git_status\
-$python\
-$nodejs\
-$rust\
-$cmd_duration\
-$line_break\
+$os$username$directory$git_branch$git_status$python$nodejs$rust$cmd_duration
 $character"""
 
 [os]
@@ -19,25 +10,23 @@ disabled = false
 style = "bold yellow"
 
 [os.symbols]
-Macos = " "
+Macos = ""
 
 [username]
 show_always = false
-style_user = "bold pink"
-format = '[$user@]($style)'
+style_user = "bold yellow"
+format = '[$user ]($style)'
 
 [directory]
-style = "bold yellow"
-format = '[ $path ]($style)'
+style = "bold magenta"
+format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
 
 [directory.substitutions]
-"Documents" = " "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
-"Projects" = " "
+"Documents" = "📄"
+"Downloads" = "⬇️"
+"Projects" = "💻"
 
 [git_branch]
 style = "bold green"
@@ -47,34 +36,27 @@ symbol = ""
 [git_status]
 style = "bold red"
 format = '[$all_status$ahead_behind ]($style)'
-modified = "✎"
-untracked = "?"
-staged = "+"
-deleted = "✕"
 
 [python]
 style = "bold yellow"
-format = '[ $symbol ${version} ]($style)'
-symbol = "🐍"
+format = '[  $version ]($style)'
 
 [nodejs]
 style = "bold yellow"
-format = '[ $symbol v${version} ]($style)'
-symbol = "🍮"
+format = '[  $version ]($style)'
 
 [rust]
 style = "bold yellow"
-format = '[ $symbol $version ]($style)'
-symbol = "🦀"
+format = '[  $version ]($style)'
 
 [cmd_duration]
-style = "dim"
-format = '[ $duration ]($style)'
-min_time = 3_000
+style = "bold dim"
+format = '[ took $duration ]($style)'
+min_time = 2_000
 
 [line_break]
 disabled = false
 
 [character]
-success_symbol = '[🍊 噜噜守夜 ❯](bold yellow)'
-error_symbol = '[🍊 出事了 ❯](bold red)'
+success_symbol = '[  布丁趴好了 ❯](bold yellow)'
+error_symbol = '[  布丁趴好了 ❯](bold red)'

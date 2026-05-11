@@ -1,80 +1,62 @@
-# lulu-terminal: Banana Day Starship Prompt
-# 布丁的小窝 · 白天模式 · 浅灰简约
+# lulu-terminal: Banana Day Starship
+# 🍌 白天模式
 
 format = """
-$username\
-$os\
-$directory\
-$git_branch\
-$git_status\
-$python\
-$nodejs\
-$rust\
-$cmd_duration\
-$line_break\
+$os$username$directory$git_branch$git_status$python$nodejs$rust$cmd_duration
 $character"""
 
 [os]
 disabled = false
-style = "bold #2D2D2D"
+style = "bold yellow"
 
 [os.symbols]
-Macos = " "
+Macos = ""
 
 [username]
 show_always = false
-style_user = "bold #E66A7A"
-format = '[$user@]($style)'
+style_user = "bold yellow"
+format = '[$user ]($style)'
 
 [directory]
-style = "bold #2D2D2D"
-format = '[ $path ]($style)'
+style = "bold magenta"
+format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
 
 [directory.substitutions]
-"Documents" = " "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
-"Projects" = " "
+"Documents" = "📄"
+"Downloads" = "⬇️"
+"Projects" = "💻"
 
 [git_branch]
-style = "bold #8AAE5A"
+style = "bold green"
 format = '[ $symbol $branch ]($style)'
 symbol = ""
 
 [git_status]
-style = "bold #E66A7A"
+style = "bold red"
 format = '[$all_status$ahead_behind ]($style)'
-modified = "✎"
-untracked = "?"
-staged = "+"
-deleted = "✕"
 
 [python]
-style = "bold #F59B32"
-format = '[ $symbol ${version} ]($style)'
-symbol = "🐍"
+style = "bold yellow"
+format = '[  $version ]($style)'
 
 [nodejs]
-style = "bold #F59B32"
-format = '[ $symbol v${version} ]($style)'
-symbol = "🍮"
+style = "bold yellow"
+format = '[  $version ]($style)'
 
 [rust]
-style = "bold #F59B32"
-format = '[ $symbol $version ]($style)'
-symbol = "🦀"
+style = "bold yellow"
+format = '[  $version ]($style)'
 
 [cmd_duration]
-style = "dim"
-format = '[ $duration ]($style)'
-min_time = 3_000
+style = "bold dim"
+format = '[ took $duration ]($style)'
+min_time = 2_000
 
 [line_break]
 disabled = false
 
 [character]
-success_symbol = '[🐾 开工啦 ❯](bold #2D2D2D)'
-error_symbol = '[🐾 出错了 ❯](bold #E66A7A)'
+success_symbol = '[  布丁的小窝 ❯](bold green)'
+error_symbol = '[  布丁的小窝 ❯](bold red)'
